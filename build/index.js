@@ -22,7 +22,7 @@ app.use(function (req, res, next) {
     next();
 });
 app.use(router_1.default);
-var port = 7008;
+var port = 7012;
 app.listen(port, function () {
     console.log("server is running at http://localhost:" + port);
 });

@@ -1,20 +1,29 @@
-import { Router, Request, Response } from "express";
-import Crowller from "./crowller";
-import DellAnalyzer from "./dellAnalyzer";
+import { Router, Request, Response, NextFunction } from "express";
 import fs from "fs";
 import path from "path";
+import Crowller from "./utils/crowller";
+import DellAnalyzer from "./utils/dellAnalyzer";
+import { getResponseData } from "./utils/util";
+
+const checkLogin = (req: Request, res: Response, next: NextFunction) => {
+  const isLogin = req.session ? req.session.login : false;
+  if (isLogin) {
+    next();
+  } else {
+    res.json(getResponseData(null, "请先登录"));
+  }
+};
 
 const router = Router();
-const analyzer = DellAnalyzer.getIntance();
 
 // 问题1: express 库的类型定义文件 .d.ts 文件类型描述不准确
-interface ReqWithBody extends Request {
+interface BodyRequest extends Request {
   body: {
     [key: string]: string | undefined;
   };
 }
 
-router.get("/", (req: Request, res: Response) => {
+router.get("/", (req: BodyRequest, res: Response) => {
   const isLogin = req.session ? req.session.login : false;
   if (isLogin) {
     res.send(`
@@ -39,55 +48,44 @@ router.get("/", (req: Request, res: Response) => {
     `);
   }
 });
-router.get("/showData", (req: ReqWithBody, res: Response) => {
-  const isLogin = req.session ? req.session.login : false;
-  if (isLogin) {
-    try {
-      const position = path.resolve(__dirname, "../data/course.json");
-      const result = fs.readFileSync(position, "utf-8");
-      res.json(JSON.parse(result));
-    } catch (e) {
-      res.send("尚未爬取到内容");
-    }
-  } else {
-    res.send("请登陆后查看内容");
-    res.send("<a href='/'>返回</a>");
+
+router.get("/getData", checkLogin, (req: BodyRequest, res: Response) => {
+  const secret = "secretKey";
+  const url = `http://www.dell-lee.com/`;
+  const analyzer = DellAnalyzer.getIntance();
+  new Crowller(url, analyzer);
+  res.json(getResponseData(true));
+});
+
+router.get("/showData", checkLogin, (req: BodyRequest, res: Response) => {
+  try {
+    const position = path.resolve(__dirname, "../data/course.json");
+    const result = fs.readFileSync(position, "utf-8");
+    res.json(getResponseData(JSON.parse(result)));
+  } catch (e) {
+    res.json(getResponseData(false, "数据不存在"));
   }
 });
-router.get("/getData", (req: ReqWithBody, res: Response) => {
-  const isLogin = req.session ? req.session.login : false;
-  if (isLogin) {
-    const secret = "secretKey";
-    const url = `http://www.dell-lee.com/`;
-    const analyzer = DellAnalyzer.getIntance();
-    new Crowller(url, analyzer);
-    res.send("getData Success!");
-    res.send("<a href='/'>返回</a>");
-  } else {
-    res.send("请登陆后爬取内容");
-    res.send("<a href='/'>返回</a>");
-  }
-});
-router.post("/login", (req: ReqWithBody, res: Response) => {
+
+router.post("/login", (req: BodyRequest, res: Response) => {
   const { password } = req.body;
   const isLogin = req.session ? req.session.login : false;
-
   if (isLogin) {
-    res.send("已经登陆过");
+    res.json(getResponseData(false, "已经登陆过"));
   } else {
     if (password === "123" && req.session) {
       req.session.login = true;
-      res.send("登陆成功");
+      res.json(getResponseData(true));
     } else {
-      res.send("登录失败 ");
+      res.json(getResponseData(false, "登陆失败"));
     }
   }
 });
-router.get("/logout", (req: ReqWithBody, res: Response) => {
+router.get("/logout", (req: BodyRequest, res: Response) => {
   if (req.session) {
     req.session.login = undefined;
   }
-  res.redirect("/");
+  res.json(getResponseData(true));
 });
 
 export default router;
