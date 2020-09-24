@@ -6,11 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var cheerio_1 = __importDefault(require("cheerio"));
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
+var moment_1 = __importDefault(require("moment"));
 var DellAnalyzer = /** @class */ (function () {
     function DellAnalyzer() {
-        this.filePath = path_1.default.resolve(__dirname, "../data/course.json");
+        this.filePath = path_1.default.resolve(__dirname, "../../data/course.json");
     }
-    DellAnalyzer.getIntance = function () {
+    DellAnalyzer.getInstance = function () {
         if (!this.instance) {
             return this.instance = new DellAnalyzer();
         }
@@ -31,7 +32,7 @@ var DellAnalyzer = /** @class */ (function () {
         });
         debugger;
         return {
-            time: new Date().getTime(),
+            time: moment_1.default().locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'),
             data: courseInfos,
         };
     };
@@ -48,10 +49,9 @@ var DellAnalyzer = /** @class */ (function () {
     DellAnalyzer.prototype.analyze = function (html, filePath) {
         var courseInfo = this.getCourseInfo(html);
         var fileContent = this.generateJsonContent(courseInfo, filePath);
-        console.log(fileContent);
         return JSON.stringify(fileContent);
     };
     return DellAnalyzer;
 }());
 exports.default = DellAnalyzer;
-//# sourceMappingURL=dellAnalyzer.js.map
+//# sourceMappingURL=analyzer.js.map

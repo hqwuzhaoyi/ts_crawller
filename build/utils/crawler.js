@@ -42,14 +42,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var superagent_1 = __importDefault(require("superagent"));
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
-var Crowller = /** @class */ (function () {
-    function Crowller(url, analyzer) {
+var Crawler = /** @class */ (function () {
+    function Crawler(url, analyzer) {
         this.url = url;
         this.analyzer = analyzer;
-        this.filePath = path_1.default.resolve(__dirname, "../data/course.json");
+        this.filePath = path_1.default.resolve(__dirname, "../../data/course.json");
         this.initSpiderProcess();
     }
-    Crowller.prototype.getRawHtml = function () {
+    Crawler.prototype.getRawHtml = function () {
         return __awaiter(this, void 0, void 0, function () {
             var result;
             return __generator(this, function (_a) {
@@ -62,10 +62,10 @@ var Crowller = /** @class */ (function () {
             });
         });
     };
-    Crowller.prototype.writeFile = function (content) {
+    Crawler.prototype.writeFile = function (content) {
         fs_1.default.writeFileSync(this.filePath, content);
     };
-    Crowller.prototype.initSpiderProcess = function () {
+    Crawler.prototype.initSpiderProcess = function () {
         return __awaiter(this, void 0, void 0, function () {
             var html, fileContent;
             return __generator(this, function (_a) {
@@ -80,12 +80,12 @@ var Crowller = /** @class */ (function () {
             });
         });
     };
-    return Crowller;
+    return Crawler;
 }());
-exports.default = Crowller;
+exports.default = Crawler;
 var secret = "secretKey";
 var url = "http://www.dell-lee.com/";
-// const analyzer = DellAnalyzer.getIntance();
+// const analyzer = DellAnalyzer.getInstance();
 // const analyzer = new DellAnalyzer();
-// const crowller = new Crowller(url, analyzer);
-//# sourceMappingURL=crowller.js.map
+// const crawler = new Crawler(url, analyzer);
+//# sourceMappingURL=crawler.js.map

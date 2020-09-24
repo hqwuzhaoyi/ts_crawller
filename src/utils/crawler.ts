@@ -1,14 +1,14 @@
 import superagent from "superagent";
 import fs from "fs";
 import path from "path";
-import DellAnalyzer from "./dellAnalyzer";
+import DellAnalyzer from "./analyzer";
 
 export interface Analyzer {
   analyze: (html: string, analyzer: string) => string;
 }
 
-class Crowller {
-  private filePath = path.resolve(__dirname, "../data/course.json");
+class Crawler {
+  private filePath = path.resolve(__dirname, "../../data/course.json");
 
   private async getRawHtml() {
     const result = await superagent.get(this.url);
@@ -30,11 +30,11 @@ class Crowller {
   }
 }
 
-export default Crowller;
+export default Crawler;
 
 const secret = "secretKey";
 const url = `http://www.dell-lee.com/`;
 
-// const analyzer = DellAnalyzer.getIntance();
+// const analyzer = DellAnalyzer.getInstance();
 // const analyzer = new DellAnalyzer();
-// const crowller = new Crowller(url, analyzer);
+// const crawler = new Crawler(url, analyzer);

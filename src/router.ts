@@ -1,8 +1,8 @@
 import { Router, Request, Response, NextFunction } from "express";
 import fs from "fs";
 import path from "path";
-import Crowller from "./utils/crowller";
-import DellAnalyzer from "./utils/dellAnalyzer";
+import Crawler from "./utils/crawler";
+import Analyzer from "./utils/analyzer";
 import { getResponseData } from "./utils/util";
 
 const checkLogin = (req: Request, res: Response, next: NextFunction) => {
@@ -23,37 +23,13 @@ interface BodyRequest extends Request {
   };
 }
 
-router.get("/", (req: BodyRequest, res: Response) => {
-  const isLogin = req.session ? req.session.login : false;
-  if (isLogin) {
-    res.send(`
-      <html>
-          <body>
-            <a href="/getData" >爬取内容</a>
-            <a href="/showData" >展示内容</a>
-            <a href="/logout" >退出</a>
-          </body>
-      </html>
-    `);
-  } else {
-    res.send(`
-      <html>
-          <body>
-              <form method="post" action="/login">
-                  <input type="password" name="password" />
-                  <button>提交</button>
-              </form>
-          </body>
-      </html>
-    `);
-  }
-});
+router.get("/", () => {});
 
 router.get("/getData", checkLogin, (req: BodyRequest, res: Response) => {
   const secret = "secretKey";
   const url = `http://www.dell-lee.com/`;
-  const analyzer = DellAnalyzer.getIntance();
-  new Crowller(url, analyzer);
+  const analyzer = Analyzer.getInstance();
+  new Crawler(url, analyzer);
   res.json(getResponseData(true));
 });
 
@@ -86,6 +62,7 @@ router.get("/logout", (req: BodyRequest, res: Response) => {
     req.session.login = undefined;
   }
   res.json(getResponseData(true));
+  res.redirect('/');
 });
 
 export default router;

@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = require("express");
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
-var crowller_1 = __importDefault(require("./utils/crowller"));
-var dellAnalyzer_1 = __importDefault(require("./utils/dellAnalyzer"));
+var crawler_1 = __importDefault(require("./utils/crawler"));
+var analyzer_1 = __importDefault(require("./utils/analyzer"));
 var util_1 = require("./utils/util");
 var checkLogin = function (req, res, next) {
     var isLogin = req.session ? req.session.login : false;
@@ -19,20 +19,12 @@ var checkLogin = function (req, res, next) {
     }
 };
 var router = express_1.Router();
-router.get("/", function (req, res) {
-    var isLogin = req.session ? req.session.login : false;
-    if (isLogin) {
-        res.send("\n      <html>\n          <body>\n            <a href=\"/getData\" >\u722C\u53D6\u5185\u5BB9</a>\n            <a href=\"/showData\" >\u5C55\u793A\u5185\u5BB9</a>\n            <a href=\"/logout\" >\u9000\u51FA</a>\n          </body>\n      </html>\n    ");
-    }
-    else {
-        res.send("\n      <html>\n          <body>\n              <form method=\"post\" action=\"/login\">\n                  <input type=\"password\" name=\"password\" />\n                  <button>\u63D0\u4EA4</button>\n              </form>\n          </body>\n      </html>\n    ");
-    }
-});
+router.get("/", function () { });
 router.get("/getData", checkLogin, function (req, res) {
     var secret = "secretKey";
     var url = "http://www.dell-lee.com/";
-    var analyzer = dellAnalyzer_1.default.getIntance();
-    new crowller_1.default(url, analyzer);
+    var analyzer = analyzer_1.default.getInstance();
+    new crawler_1.default(url, analyzer);
     res.json(util_1.getResponseData(true));
 });
 router.get("/showData", checkLogin, function (req, res) {
@@ -66,6 +58,7 @@ router.get("/logout", function (req, res) {
         req.session.login = undefined;
     }
     res.json(util_1.getResponseData(true));
+    res.redirect('/');
 });
 exports.default = router;
 //# sourceMappingURL=router.js.map

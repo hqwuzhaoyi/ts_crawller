@@ -1,7 +1,8 @@
 import cheerio from "cheerio";
 import fs from "fs";
 import path from "path";
-import { Analyzer } from "./crowller";
+import { Analyzer } from "./crawler";
+import moment from 'moment'
 
 interface Course {
   title: string;
@@ -9,25 +10,25 @@ interface Course {
 }
 
 interface CourseResult {
-  time: number;
+  time: string;
   data: Course[];
 }
 
 interface Content {
-  [propName: number]: Course[];
+  [propName: string]: Course[];
 }
 
 export default class DellAnalyzer implements Analyzer {
   private static instance: DellAnalyzer;
 
-  static getIntance() {
+  static getInstance() {
       if(!this.instance) {
           return this.instance = new DellAnalyzer();
       }
       return this.instance
   }
 
-  private filePath = path.resolve(__dirname, "../data/course.json");
+  private filePath = path.resolve(__dirname, "../../data/course.json");
 
   private getCourseInfo(html: string) {
     const $ = cheerio.load(html);
@@ -44,7 +45,7 @@ export default class DellAnalyzer implements Analyzer {
     });
     debugger;
     return {
-      time: new Date().getTime(),
+      time: moment().locale('zh-cn').format('YYYY-MM-DD HH:mm:ss'),
       data: courseInfos,
     };
   }
@@ -63,7 +64,6 @@ export default class DellAnalyzer implements Analyzer {
   public analyze(html: string, filePath: string) {
     const courseInfo = this.getCourseInfo(html);
     const fileContent = this.generateJsonContent(courseInfo, filePath);
-    console.log(fileContent);
     return JSON.stringify(fileContent);
   }
 
