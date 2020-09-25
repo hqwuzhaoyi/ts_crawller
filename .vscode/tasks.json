@@ -1,0 +1,18 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "dev",
+      "problemMatcher": [],
+      "label": "npm: dev",
+      "detail": "tsc && concurrently npm:dev:*"
+    },
+    {
+      "type": "typescript",
+      "label": "typescript",
+      "tsconfig": "tsconfig.json",
+      "problemMatcher": ["$tsc"]
+    }
+  ]
+}
